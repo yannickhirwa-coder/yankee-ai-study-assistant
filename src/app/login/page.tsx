@@ -28,8 +28,8 @@ export default function LoginPage() {
 
       if (error) throw error;
 
-      router.push("/");
-      router.refresh();
+      router.replace("/dashboard");
+      router.refresh(); 
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Login failed."
