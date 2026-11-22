@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import ThemeToggle from "@/components/theme-toggle";
+import Navbar from "@/components/navbar";
 
 type Role = "student" | "teacher" | "admin";
 
@@ -526,607 +526,602 @@ export default function CertificationsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 text-gray-900 transition-colors dark:bg-[#101827] dark:text-gray-100">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <>
+      <Navbar />
 
-        {/* HEADER */}
-        <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <Link
-              href="/"
-              className="mb-3 inline-flex text-sm text-blue-600 hover:underline dark:text-blue-400"
-            >
-              ← Back to Dashboard
-            </Link>
+      <main className="min-h-screen bg-gray-50 text-gray-900 transition-colors dark:bg-[#101827] dark:text-gray-100">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
-            <h1 className="text-3xl font-bold tracking-tight">
-              IT Skills & Certifications
-            </h1>
+          {/* HEADER */}
+          <header className="mb-8">
+            <div>
+              <Link
+                href="/dashboard"
+                className="mb-3 inline-flex text-sm text-blue-600 hover:underline dark:text-blue-400"
+              >
+                ← Back to Dashboard
+              </Link>
 
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              Learn, practice, build projects and monitor your IT journey.
-            </p>
-          </div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                IT Skills & Certifications
+              </h1>
 
-          <div className="flex items-center gap-3">
-            <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold capitalize text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
-              {role} account
-            </span>
-            <ThemeToggle />
-          </div>
-        </header>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                Learn, practice, build projects and monitor your IT journey.
+              </p>
+            </div>
+          </header>
 
-        {/* MESSAGES */}
-        {error && (
-          <div className="mb-5 rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
-            {error}
-          </div>
-        )}
+          {/* MESSAGES */}
+          {error && (
+            <div className="mb-5 rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+              {error}
+            </div>
+          )}
 
-        {success && (
-          <div className="mb-5 rounded-xl border border-green-300 bg-green-50 p-4 text-sm text-green-700 dark:border-green-900 dark:bg-green-950/40 dark:text-green-300">
-            {success}
-          </div>
-        )}
+          {success && (
+            <div className="mb-5 rounded-xl border border-green-300 bg-green-50 p-4 text-sm text-green-700 dark:border-green-900 dark:bg-green-950/40 dark:text-green-300">
+              {success}
+            </div>
+          )}
 
-        {loading ? (
-          <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center dark:border-gray-700 dark:bg-gray-900">
-            Loading your learning centre...
-          </div>
-        ) : (
-          <>
-            {/* PERSONAL PROGRESS */}
-            <section className="mb-10">
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-xl font-bold">
-                    {role === "student"
-                      ? "My Learning Progress"
-                      : "Learning Progress Overview"}
-                  </h2>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Your recorded learning activities and achievements.
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => setShowForm(!showForm)}
-                  className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
-                >
-                  + Record Learning
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <StatCard
-                  title="My Activities"
-                  value={myRecords.length}
-                  icon="📚"
-                />
-                <StatCard
-                  title="Completed"
-                  value={completedCount}
-                  icon="🏆"
-                />
-                <StatCard
-                  title="In Progress"
-                  value={activeCount}
-                  icon="🚀"
-                />
-                <StatCard
-                  title="Learning Hours"
-                  value={totalHours}
-                  icon="⏱️"
-                />
-              </div>
-
-              <div className="mt-4 rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
-                <div className="mb-3 flex justify-between gap-3 text-sm">
-                  <span className="font-semibold">
-                    My completion rate
-                  </span>
-                  <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {completionRate}%
-                  </span>
-                </div>
-
-                <div className="h-3 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                  <div
-                    className="h-full rounded-full bg-blue-600 transition-all"
-                    style={{ width: `${completionRate}%` }}
-                  />
-                </div>
-              </div>
-            </section>
-
-            {/* ADD PROGRESS FORM */}
-            {showForm && (
-              <section className="mb-10 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
-                <h2 className="mb-2 text-xl font-bold">
-                  Record a Learning Activity
-                </h2>
-
-                <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-                  Record work completed on Yankee AI or another learning website.
-                </p>
-
-                <form
-                  onSubmit={saveProgress}
-                  className="grid grid-cols-1 gap-4 md:grid-cols-2"
-                >
-                  <FormField label="Skill Area">
-                    <select
-                      value={form.skill_area}
-                      onChange={(e) =>
-                        updateForm("skill_area", e.target.value)
-                      }
-                      className="form-input"
-                    >
-                      {skillCategories
-                        .filter((item) => item !== "All Skills")
-                        .map((item) => (
-                          <option key={item}>{item}</option>
-                        ))}
-                    </select>
-                  </FormField>
-
-                  <FormField label="Learning Platform">
-                    <input
-                      required
-                      value={form.platform_name}
-                      onChange={(e) =>
-                        updateForm("platform_name", e.target.value)
-                      }
-                      placeholder="e.g. Cisco Networking Academy"
-                      className="form-input"
-                    />
-                  </FormField>
-
-                  <FormField label="Activity Title">
-                    <input
-                      required
-                      value={form.activity_title}
-                      onChange={(e) =>
-                        updateForm("activity_title", e.target.value)
-                      }
-                      placeholder="e.g. Introduction to Networking"
-                      className="form-input"
-                    />
-                  </FormField>
-
-                  <FormField label="Activity Type">
-                    <select
-                      value={form.activity_type}
-                      onChange={(e) =>
-                        updateForm("activity_type", e.target.value)
-                      }
-                      className="form-input"
-                    >
-                      {activityTypes.map((item) => (
-                        <option key={item} value={item}>
-                          {item.charAt(0).toUpperCase() + item.slice(1)}
-                        </option>
-                      ))}
-                    </select>
-                  </FormField>
-
-                  <FormField label="Platform Link (optional)">
-                    <input
-                      type="url"
-                      value={form.platform_url}
-                      onChange={(e) =>
-                        updateForm("platform_url", e.target.value)
-                      }
-                      placeholder="https://example.com"
-                      className="form-input"
-                    />
-                  </FormField>
-
-                  <FormField label="Time Spent (minutes)">
-                    <input
-                      type="number"
-                      min="0"
-                      step="1"
-                      value={form.minutes_spent}
-                      onChange={(e) =>
-                        updateForm("minutes_spent", e.target.value)
-                      }
-                      className="form-input"
-                    />
-                  </FormField>
-
-                  <FormField label="Progress Status">
-                    <select
-                      value={form.status}
-                      onChange={(e) =>
-                        updateForm("status", e.target.value)
-                      }
-                      className="form-input"
-                    >
-                      <option value="planned">Planned</option>
-                      <option value="in_progress">In Progress</option>
-                      <option value="completed">Completed</option>
-                    </select>
-                  </FormField>
-
-                  <FormField label="Notes">
-                    <textarea
-                      value={form.notes}
-                      onChange={(e) =>
-                        updateForm("notes", e.target.value)
-                      }
-                      placeholder="What did you learn or practice?"
-                      rows={2}
-                      className="form-input"
-                    />
-                  </FormField>
-
-                  <div className="flex flex-wrap gap-3 md:col-span-2">
-                    <button
-                      type="submit"
-                      disabled={saving}
-                      className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
-                    >
-                      {saving ? "Saving..." : "Save Progress"}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setShowForm(false)}
-                      className="rounded-xl border border-gray-300 px-6 py-3 text-sm font-semibold dark:border-gray-600"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              </section>
-            )}
-
-            {/* ADMIN AND TEACHER VIEW */}
-            {role !== "student" && (
-              <section className="mb-10 rounded-2xl border border-purple-200 bg-purple-50 p-5 dark:border-purple-900 dark:bg-purple-950/20">
-                <div className="flex flex-wrap items-center justify-between gap-3">
+          {loading ? (
+            <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center dark:border-gray-700 dark:bg-gray-900">
+              Loading your learning centre...
+            </div>
+          ) : (
+            <>
+              {/* PERSONAL PROGRESS */}
+              <section className="mb-10">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h2 className="text-lg font-bold text-purple-900 dark:text-purple-300">
-                      {role === "admin"
-                        ? "Administrator Monitoring"
-                        : "Teacher Monitoring"}
+                    <h2 className="text-xl font-bold">
+                      {role === "student"
+                        ? "My Learning Progress"
+                        : "Learning Progress Overview"}
                     </h2>
-                    <p className="mt-1 text-sm text-purple-800 dark:text-purple-300">
-                      Authorized account: you can view learning records belonging to students.
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                      Your recorded learning activities and achievements.
                     </p>
                   </div>
 
                   <button
-                    onClick={() => setAdminMode(!adminMode)}
-                    className="rounded-xl border border-purple-300 px-4 py-2 text-sm font-semibold text-purple-900 dark:border-purple-700 dark:text-purple-300"
+                    onClick={() => setShowForm(!showForm)}
+                    className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
                   >
-                    {adminMode ? "Hide Student Records" : "View Student Records"}
+                    + Record Learning
                   </button>
                 </div>
 
-                {adminMode && (
-                  <div className="mt-5 overflow-x-auto rounded-xl bg-white dark:bg-gray-900">
-                    <table className="w-full min-w-[650px] text-left text-sm">
-                      <thead className="border-b border-gray-200 dark:border-gray-700">
-                        <tr>
-                          <th className="p-3">Student ID</th>
-                          <th className="p-3">Skill</th>
-                          <th className="p-3">Activity</th>
-                          <th className="p-3">Status</th>
-                          <th className="p-3">Minutes</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {records
-                          .filter((item) => item.user_id !== userId)
-                          .map((item) => (
-                            <tr
-                              key={item.id}
-                              className="border-b border-gray-100 dark:border-gray-800"
-                            >
-                              <td className="p-3 font-mono text-xs">
-                                {item.user_id.slice(0, 8)}...
-                              </td>
-                              <td className="p-3">{item.skill_area}</td>
-                              <td className="p-3">
-                                {item.activity_title}
-                              </td>
-                              <td className="p-3 capitalize">
-                                {item.status.replace("_", " ")}
-                              </td>
-                              <td className="p-3">
-                                {item.minutes_spent}
-                              </td>
-                            </tr>
-                          ))}
-
-                        {records.filter(
-                          (item) => item.user_id !== userId
-                        ).length === 0 && (
-                          <tr>
-                            <td
-                              colSpan={5}
-                              className="p-6 text-center text-gray-500"
-                            >
-                              No other student activity has been recorded yet.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </section>
-            )}
-
-            {/* LEARNING LIBRARY */}
-            <section className="mb-10">
-              <div className="mb-5">
-                <h2 className="text-2xl font-bold">
-                  Free IT Learning Library
-                </h2>
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                  Explore trusted websites to learn and practice real-world IT skills.
-                </p>
-              </div>
-
-              <div className="mb-5 grid grid-cols-1 gap-3 md:grid-cols-3">
-                <div className="md:col-span-2">
-                  <input
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search platforms, skills or topics..."
-                    className="form-input"
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <StatCard
+                    title="My Activities"
+                    value={myRecords.length}
+                    icon="📚"
+                  />
+                  <StatCard
+                    title="Completed"
+                    value={completedCount}
+                    icon="🏆"
+                  />
+                  <StatCard
+                    title="In Progress"
+                    value={activeCount}
+                    icon="🚀"
+                  />
+                  <StatCard
+                    title="Learning Hours"
+                    value={totalHours}
+                    icon="⏱️"
                   />
                 </div>
 
-                <select
-                  value={selectedSkill}
-                  onChange={(e) => setSelectedSkill(e.target.value)}
-                  className="form-input"
-                >
-                  {skillCategories.map((item) => (
-                    <option key={item}>{item}</option>
-                  ))}
-                </select>
-              </div>
+                <div className="mt-4 rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
+                  <div className="mb-3 flex justify-between gap-3 text-sm">
+                    <span className="font-semibold">
+                      My completion rate
+                    </span>
+                    <span className="font-bold text-blue-600 dark:text-blue-400">
+                      {completionRate}%
+                    </span>
+                  </div>
 
-              <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
-                Showing {filteredResources.length} learning platforms.
-              </p>
-
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-                {filteredResources.map((resource) => (
-                  <article
-                    key={resource.name}
-                    className="flex flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-gray-700 dark:bg-gray-900"
-                  >
-                    <div className="mb-3 flex items-start justify-between gap-3">
-                      <h3 className="text-lg font-bold">
-                        {resource.name}
-                      </h3>
-
-                      <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                        Free access
-                      </span>
-                    </div>
-
-                    <p className="mb-4 flex-1 text-sm leading-6 text-gray-600 dark:text-gray-400">
-                      {resource.description}
-                    </p>
-
-                    <div className="mb-3 flex flex-wrap gap-2">
-                      {resource.skills.map((skill) => (
-                        <span
-                          key={skill}
-                          className="rounded-full bg-blue-50 px-2 py-1 text-xs text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="mb-4 space-y-1 text-xs text-gray-500 dark:text-gray-400">
-                      <p>{resource.type}</p>
-                      <p>{resource.level}</p>
-                      <p>{resource.freeNote}</p>
-                    </div>
-
-                    <a
-                      href={resource.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-auto rounded-xl bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-blue-700"
-                    >
-                      Start Learning ↗
-                    </a>
-                  </article>
-                ))}
-              </div>
-
-              {filteredResources.length === 0 && (
-                <div className="rounded-xl border border-gray-200 p-8 text-center text-gray-500 dark:border-gray-700">
-                  No learning platforms match your search.
+                  <div className="h-3 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                    <div
+                      className="h-full rounded-full bg-blue-600 transition-all"
+                      style={{ width: `${completionRate}%` }}
+                    />
+                  </div>
                 </div>
-              )}
-            </section>
+              </section>
 
-            {/* ACTIVITY HISTORY */}
-            <section className="mb-10">
-              <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-2xl font-bold">
-                    {role === "student"
-                      ? "My Learning History"
-                      : "My Learning History"}
+              {/* ADD PROGRESS FORM */}
+              {showForm && (
+                <section className="mb-10 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                  <h2 className="mb-2 text-xl font-bold">
+                    Record a Learning Activity
                   </h2>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Review and update the activities you have recorded.
+
+                  <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+                    Record work completed on Yankee AI or another learning website.
+                  </p>
+
+                  <form
+                    onSubmit={saveProgress}
+                    className="grid grid-cols-1 gap-4 md:grid-cols-2"
+                  >
+                    <FormField label="Skill Area">
+                      <select
+                        value={form.skill_area}
+                        onChange={(e) =>
+                          updateForm("skill_area", e.target.value)
+                        }
+                        className="form-input"
+                      >
+                        {skillCategories
+                          .filter((item) => item !== "All Skills")
+                          .map((item) => (
+                            <option key={item}>{item}</option>
+                          ))}
+                      </select>
+                    </FormField>
+
+                    <FormField label="Learning Platform">
+                      <input
+                        required
+                        value={form.platform_name}
+                        onChange={(e) =>
+                          updateForm("platform_name", e.target.value)
+                        }
+                        placeholder="e.g. Cisco Networking Academy"
+                        className="form-input"
+                      />
+                    </FormField>
+
+                    <FormField label="Activity Title">
+                      <input
+                        required
+                        value={form.activity_title}
+                        onChange={(e) =>
+                          updateForm("activity_title", e.target.value)
+                        }
+                        placeholder="e.g. Introduction to Networking"
+                        className="form-input"
+                      />
+                    </FormField>
+
+                    <FormField label="Activity Type">
+                      <select
+                        value={form.activity_type}
+                        onChange={(e) =>
+                          updateForm("activity_type", e.target.value)
+                        }
+                        className="form-input"
+                      >
+                        {activityTypes.map((item) => (
+                          <option key={item} value={item}>
+                            {item.charAt(0).toUpperCase() + item.slice(1)}
+                          </option>
+                        ))}
+                      </select>
+                    </FormField>
+
+                    <FormField label="Platform Link (optional)">
+                      <input
+                        type="url"
+                        value={form.platform_url}
+                        onChange={(e) =>
+                          updateForm("platform_url", e.target.value)
+                        }
+                        placeholder="https://example.com"
+                        className="form-input"
+                      />
+                    </FormField>
+
+                    <FormField label="Time Spent (minutes)">
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={form.minutes_spent}
+                        onChange={(e) =>
+                          updateForm("minutes_spent", e.target.value)
+                        }
+                        className="form-input"
+                      />
+                    </FormField>
+
+                    <FormField label="Progress Status">
+                      <select
+                        value={form.status}
+                        onChange={(e) =>
+                          updateForm("status", e.target.value)
+                        }
+                        className="form-input"
+                      >
+                        <option value="planned">Planned</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                      </select>
+                    </FormField>
+
+                    <FormField label="Notes">
+                      <textarea
+                        value={form.notes}
+                        onChange={(e) =>
+                          updateForm("notes", e.target.value)
+                        }
+                        placeholder="What did you learn or practice?"
+                        rows={2}
+                        className="form-input"
+                      />
+                    </FormField>
+
+                    <div className="flex flex-wrap gap-3 md:col-span-2">
+                      <button
+                        type="submit"
+                        disabled={saving}
+                        className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+                      >
+                        {saving ? "Saving..." : "Save Progress"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setShowForm(false)}
+                        className="rounded-xl border border-gray-300 px-6 py-3 text-sm font-semibold dark:border-gray-600"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </section>
+              )}
+
+              {/* ADMIN AND TEACHER VIEW */}
+              {role !== "student" && (
+                <section className="mb-10 rounded-2xl border border-purple-200 bg-purple-50 p-5 dark:border-purple-900 dark:bg-purple-950/20">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <h2 className="text-lg font-bold text-purple-900 dark:text-purple-300">
+                        {role === "admin"
+                          ? "Administrator Monitoring"
+                          : "Teacher Monitoring"}
+                      </h2>
+                      <p className="mt-1 text-sm text-purple-800 dark:text-purple-300">
+                        Authorized account: you can view learning records belonging to students.
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => setAdminMode(!adminMode)}
+                      className="rounded-xl border border-purple-300 px-4 py-2 text-sm font-semibold text-purple-900 dark:border-purple-700 dark:text-purple-300"
+                    >
+                      {adminMode ? "Hide Student Records" : "View Student Records"}
+                    </button>
+                  </div>
+
+                  {adminMode && (
+                    <div className="mt-5 overflow-x-auto rounded-xl bg-white dark:bg-gray-900">
+                      <table className="w-full min-w-[650px] text-left text-sm">
+                        <thead className="border-b border-gray-200 dark:border-gray-700">
+                          <tr>
+                            <th className="p-3">Student ID</th>
+                            <th className="p-3">Skill</th>
+                            <th className="p-3">Activity</th>
+                            <th className="p-3">Status</th>
+                            <th className="p-3">Minutes</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {records
+                            .filter((item) => item.user_id !== userId)
+                            .map((item) => (
+                              <tr
+                                key={item.id}
+                                className="border-b border-gray-100 dark:border-gray-800"
+                              >
+                                <td className="p-3 font-mono text-xs">
+                                  {item.user_id.slice(0, 8)}...
+                                </td>
+                                <td className="p-3">{item.skill_area}</td>
+                                <td className="p-3">
+                                  {item.activity_title}
+                                </td>
+                                <td className="p-3 capitalize">
+                                  {item.status.replace("_", " ")}
+                                </td>
+                                <td className="p-3">
+                                  {item.minutes_spent}
+                                </td>
+                              </tr>
+                            ))}
+
+                          {records.filter(
+                            (item) => item.user_id !== userId
+                          ).length === 0 && (
+                            <tr>
+                              <td
+                                colSpan={5}
+                                className="p-6 text-center text-gray-500"
+                              >
+                                No other student activity has been recorded yet.
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </section>
+              )}
+
+              {/* LEARNING LIBRARY */}
+              <section className="mb-10">
+                <div className="mb-5">
+                  <h2 className="text-2xl font-bold">
+                    Free IT Learning Library
+                  </h2>
+                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    Explore trusted websites to learn and practice real-world IT skills.
                   </p>
                 </div>
 
-                <select
-                  value={progressFilter}
-                  onChange={(e) => setProgressFilter(e.target.value)}
-                  className="form-input max-w-[190px]"
-                >
-                  <option value="all">All Activities</option>
-                  <option value="planned">Planned</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                </select>
-              </div>
+                <div className="mb-5 grid grid-cols-1 gap-3 md:grid-cols-3">
+                  <div className="md:col-span-2">
+                    <input
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Search platforms, skills or topics..."
+                      className="form-input"
+                    />
+                  </div>
 
-              <div className="space-y-3">
-                {displayedRecords
-                  .filter((record) => record.user_id === userId)
-                  .map((record) => (
+                  <select
+                    value={selectedSkill}
+                    onChange={(e) => setSelectedSkill(e.target.value)}
+                    className="form-input"
+                  >
+                    {skillCategories.map((item) => (
+                      <option key={item}>{item}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+                  Showing {filteredResources.length} learning platforms.
+                </p>
+
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+                  {filteredResources.map((resource) => (
                     <article
-                      key={record.id}
-                      className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900"
+                      key={resource.name}
+                      className="flex flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-gray-700 dark:bg-gray-900"
                     >
-                      <div className="flex flex-wrap items-start justify-between gap-4">
-                        <div className="min-w-0 flex-1">
-                          <h3 className="font-bold">
-                            {record.activity_title}
-                          </h3>
+                      <div className="mb-3 flex items-start justify-between gap-3">
+                        <h3 className="text-lg font-bold">
+                          {resource.name}
+                        </h3>
 
-                          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            {record.platform_name} · {record.skill_area}
-                          </p>
-
-                          <p className="mt-2 text-xs capitalize text-gray-500">
-                            {record.activity_type} · {record.minutes_spent} minutes
-                          </p>
-
-                          {record.notes && (
-                            <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">
-                              {record.notes}
-                            </p>
-                          )}
-
-                          {record.platform_url && (
-                            <a
-                              href={record.platform_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="mt-2 inline-block text-xs text-blue-600 hover:underline dark:text-blue-400"
-                            >
-                              Open learning platform ↗
-                            </a>
-                          )}
-                        </div>
-
-                        <div className="flex flex-col items-end gap-3">
-                          <span
-                            className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${
-                              record.status === "completed"
-                                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                                : record.status === "in_progress"
-                                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
-                                  : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"
-                            }`}
-                          >
-                            {record.status.replace("_", " ")}
-                          </span>
-
-                          <select
-                            value={record.status}
-                            onChange={(e) =>
-                              updateStatus(record, e.target.value)
-                            }
-                            className="rounded-lg border border-gray-300 bg-white px-2 py-2 text-xs dark:border-gray-600 dark:bg-gray-800"
-                          >
-                            <option value="planned">Planned</option>
-                            <option value="in_progress">In Progress</option>
-                            <option value="completed">Completed</option>
-                          </select>
-
-                          <button
-                            onClick={() => deleteRecord(record)}
-                            className="text-xs text-red-600 hover:underline dark:text-red-400"
-                          >
-                            Delete record
-                          </button>
-                        </div>
+                        <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                          Free access
+                        </span>
                       </div>
+
+                      <p className="mb-4 flex-1 text-sm leading-6 text-gray-600 dark:text-gray-400">
+                        {resource.description}
+                      </p>
+
+                      <div className="mb-3 flex flex-wrap gap-2">
+                        {resource.skills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="rounded-full bg-blue-50 px-2 py-1 text-xs text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="mb-4 space-y-1 text-xs text-gray-500 dark:text-gray-400">
+                        <p>{resource.type}</p>
+                        <p>{resource.level}</p>
+                        <p>{resource.freeNote}</p>
+                      </div>
+
+                      <a
+                        href={resource.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-auto rounded-xl bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-blue-700"
+                      >
+                        Start Learning ↗
+                      </a>
                     </article>
                   ))}
+                </div>
 
-                {myRecords.filter((record) =>
-                  progressFilter === "all"
-                    ? true
-                    : record.status === progressFilter
-                ).length === 0 && (
-                  <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center dark:border-gray-700 dark:bg-gray-900">
-                    <p className="text-lg font-semibold">
-                      No learning activities yet.
-                    </p>
-                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                      Start learning from one of the platforms above, then record your progress here.
-                    </p>
-                    <button
-                      onClick={() => setShowForm(true)}
-                      className="mt-4 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
-                    >
-                      Record Your First Activity
-                    </button>
+                {filteredResources.length === 0 && (
+                  <div className="rounded-xl border border-gray-200 p-8 text-center text-gray-500 dark:border-gray-700">
+                    No learning platforms match your search.
                   </div>
                 )}
-              </div>
-            </section>
+              </section>
 
-            {/* INFORMATION */}
-            <section className="rounded-2xl border border-gray-200 bg-gray-100 p-5 dark:border-gray-700 dark:bg-gray-900">
-              <h2 className="font-bold">How progress monitoring works</h2>
-              <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-gray-600 dark:text-gray-400">
-                <li>
-                  Yankee AI saves learning activities that you record inside this page.
-                </li>
-                <li>
-                  Your learning records are stored in Supabase and remain available after you log in again.
-                </li>
-                <li>
-                  External websites do not automatically send their activity to Yankee AI. You must record those activities yourself unless a supported integration is added.
-                </li>
-                <li>
-                  Teachers and administrators can view student records only after their accounts have been assigned the appropriate role.
-                </li>
-                <li>
-                  Students can only modify or delete their own learning records.
-                </li>
-              </ul>
-            </section>
-          </>
-        )}
-      </div>
+              {/* ACTIVITY HISTORY */}
+              <section className="mb-10">
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-2xl font-bold">
+                      My Learning History
+                    </h2>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                      Review and update the activities you have recorded.
+                    </p>
+                  </div>
 
-      <style jsx>{`
-        .form-input {
-          width: 100%;
-          border: 1px solid #d1d5db;
-          border-radius: 0.75rem;
-          background: white;
-          color: #111827;
-          padding: 0.75rem 0.9rem;
-          font-size: 0.875rem;
-          outline: none;
-        }
+                  <select
+                    value={progressFilter}
+                    onChange={(e) => setProgressFilter(e.target.value)}
+                    className="form-input max-w-[190px]"
+                  >
+                    <option value="all">All Activities</option>
+                    <option value="planned">Planned</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
 
-        .form-input:focus {
-          border-color: #2563eb;
-          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
-        }
+                <div className="space-y-3">
+                  {displayedRecords
+                    .filter((record) => record.user_id === userId)
+                    .map((record) => (
+                      <article
+                        key={record.id}
+                        className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900"
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-4">
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-bold">
+                              {record.activity_title}
+                            </h3>
 
-        :global(.dark) .form-input {
-          background: #1f2937;
-          color: #f9fafb;
-          border-color: #4b5563;
-        }
-      `}</style>
-    </main>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                              {record.platform_name} · {record.skill_area}
+                            </p>
+
+                            <p className="mt-2 text-xs capitalize text-gray-500">
+                              {record.activity_type} · {record.minutes_spent} minutes
+                            </p>
+
+                            {record.notes && (
+                              <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">
+                                {record.notes}
+                              </p>
+                            )}
+
+                            {record.platform_url && (
+                              <a
+                                href={record.platform_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-2 inline-block text-xs text-blue-600 hover:underline dark:text-blue-400"
+                              >
+                                Open learning platform ↗
+                              </a>
+                            )}
+                          </div>
+
+                          <div className="flex flex-col items-end gap-3">
+                            <span
+                              className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${
+                                record.status === "completed"
+                                  ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                                  : record.status === "in_progress"
+                                    ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                                    : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"
+                              }`}
+                            >
+                              {record.status.replace("_", " ")}
+                            </span>
+
+                            <select
+                              value={record.status}
+                              onChange={(e) =>
+                                updateStatus(record, e.target.value)
+                              }
+                              className="rounded-lg border border-gray-300 bg-white px-2 py-2 text-xs dark:border-gray-600 dark:bg-gray-800"
+                            >
+                              <option value="planned">Planned</option>
+                              <option value="in_progress">In Progress</option>
+                              <option value="completed">Completed</option>
+                            </select>
+
+                            <button
+                              onClick={() => deleteRecord(record)}
+                              className="text-xs text-red-600 hover:underline dark:text-red-400"
+                            >
+                              Delete record
+                            </button>
+                          </div>
+                        </div>
+                      </article>
+                    ))}
+
+                  {myRecords.filter((record) =>
+                    progressFilter === "all"
+                      ? true
+                      : record.status === progressFilter
+                  ).length === 0 && (
+                    <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center dark:border-gray-700 dark:bg-gray-900">
+                      <p className="text-lg font-semibold">
+                        No learning activities yet.
+                      </p>
+                      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        Start learning from one of the platforms above, then record your progress here.
+                      </p>
+                      <button
+                        onClick={() => setShowForm(true)}
+                        className="mt-4 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
+                      >
+                        Record Your First Activity
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </section>
+
+              {/* INFORMATION */}
+              <section className="rounded-2xl border border-gray-200 bg-gray-100 p-5 dark:border-gray-700 dark:bg-gray-900">
+                <h2 className="font-bold">How progress monitoring works</h2>
+                <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-gray-600 dark:text-gray-400">
+                  <li>
+                    Yankee AI saves learning activities that you record inside this page.
+                  </li>
+                  <li>
+                    Your learning records are stored in Supabase and remain available after you log in again.
+                  </li>
+                  <li>
+                    External websites do not automatically send their activity to Yankee AI. You must record those activities yourself unless a supported integration is added.
+                  </li>
+                  <li>
+                    Teachers and administrators can view student records only after their accounts have been assigned the appropriate role.
+                  </li>
+                  <li>
+                    Students can only modify or delete their own learning records.
+                  </li>
+                </ul>
+              </section>
+            </>
+          )}
+        </div>
+
+        <style jsx>{`
+          .form-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 0.75rem;
+            background: white;
+            color: #111827;
+            padding: 0.75rem 0.9rem;
+            font-size: 0.875rem;
+            outline: none;
+          }
+
+          .form-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+          }
+
+          :global(.dark) .form-input {
+            background: #1f2937;
+            color: #f9fafb;
+            border-color: #4b5563;
+          }
+        `}</style>
+      </main>
+    </>
   );
 }
 

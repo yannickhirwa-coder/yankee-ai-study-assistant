@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -10,11 +11,13 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     setLoading(true);
     setError("");
 
@@ -22,17 +25,19 @@ export default function LoginPage() {
       const supabase = createClient();
 
       const { error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim(),
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       router.replace("/dashboard");
-      router.refresh(); 
+      router.refresh();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Login failed."
+        err instanceof Error ? err.message : "Unable to log in. Please try again."
       );
     } finally {
       setLoading(false);
@@ -40,66 +45,118 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10">
-      <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-xl">
+    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-5 py-12 text-white">
+      <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-white">
-            Yankee AI
+          <Link href="/" className="text-3xl font-bold">
+            Yankee<span className="text-violet-500">AI</span>
+          </Link>
+
+          <h1 className="mt-8 text-3xl font-bold">
+            Welcome back
           </h1>
-          <p className="mt-2 text-slate-400">
-            Welcome back! Sign in to continue learning.
+
+          <p className="mt-3 text-slate-400">
+            Continue your learning journey with Yankee AI.
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-5">
-          <div>
-            <label className="mb-2 block text-sm text-slate-300">
-              Email address
-            </label>
-            <input
-              required
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 p-3 text-white outline-none focus:border-blue-500"
-            />
-          </div>
+        <div className="rounded-2xl border border-white/10 bg-slate-900 p-8 shadow-xl">
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label
+                htmlFor="email"
+                className="mb-2 block text-sm font-medium text-slate-300"
+              >
+                Email address
+              </label>
 
-          <div>
-            <label className="mb-2 block text-sm text-slate-300">
-              Password
-            </label>
-            <input
-              required
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 p-3 text-white outline-none focus:border-blue-500"
-            />
-          </div>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                autoComplete="email"
+                required
+                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+              />
+            </div>
 
-          {error && (
-            <p className="rounded-lg bg-red-950 p-3 text-sm text-red-300">
-              {error}
-            </p>
-          )}
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium text-slate-300"
+                >
+                  Password
+                </label>
 
-          <button
-            disabled={loading}
-            type="submit"
-            className="w-full rounded-lg bg-blue-600 p-3 font-semibold text-white hover:bg-blue-500 disabled:opacity-50"
-          >
-            {loading ? "Signing in..." : "Sign in"}
-          </button>
-        </form>
+                <Link
+                  href="/forgot-password"
+                  className="text-sm font-medium text-violet-400 transition hover:text-violet-300"
+                >
+                  Forgot password?
+                </Link>
+              </div>
 
-        <p className="mt-6 text-center text-sm text-slate-400">
-          Don't have an account?{" "}
-          <a href="/signup" className="font-semibold text-blue-400">
-            Create account
-          </a>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  required
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 pr-20 text-white outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400 hover:text-white"
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div
+                role="alert"
+                className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400"
+              >
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-xl bg-violet-600 py-3.5 font-semibold text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loading ? "Logging in..." : "Log in"}
+            </button>
+          </form>
+
+          <div className="my-6 border-t border-white/10" />
+
+          <p className="text-center text-sm text-slate-400">
+            Don't have an account?{" "}
+            <Link
+              href="/signup"
+              className="font-semibold text-violet-400 hover:text-violet-300"
+            >
+              Create one
+            </Link>
+          </p>
+        </div>
+
+        <p className="mt-8 text-center text-sm text-slate-500">
+          <Link href="/" className="transition hover:text-violet-400">
+            ← Back to home
+          </Link>
         </p>
       </div>
     </main>
