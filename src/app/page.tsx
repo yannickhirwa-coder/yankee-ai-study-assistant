@@ -66,15 +66,15 @@ export default function Home() {
   const [themeLoaded, setThemeLoaded] = useState(false);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
 
- useEffect(() => {
-  const savedTheme = localStorage.getItem("yankee-theme");
-  const isDark = savedTheme !== "light";
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("yankee-theme");
+    const isDark = savedTheme !== "light";
 
-  setDarkMode(isDark);
-  document.documentElement.classList.toggle("dark", isDark);
-  setThemeLoaded(true);
-  setCurrentYear(new Date().getFullYear());
-}, []);
+    setDarkMode(isDark);
+    document.documentElement.classList.toggle("dark", isDark);
+    setThemeLoaded(true);
+    setCurrentYear(new Date().getFullYear());
+  }, []);
 
   function toggleTheme() {
     const nextMode = !darkMode;
@@ -89,9 +89,11 @@ export default function Home() {
     : "bg-slate-50 text-slate-900";
 
   const muted = darkMode ? "text-slate-300" : "text-slate-600";
+
   const card = darkMode
     ? "border-white/10 bg-slate-900"
     : "border-slate-200 bg-white";
+
   const secondaryCard = darkMode
     ? "border-white/10 bg-slate-900/80"
     : "border-slate-200 bg-white";
@@ -203,7 +205,7 @@ export default function Home() {
             </p>
           </div>
 
-          {/* AI preview */}
+          {/* AI Preview */}
           <div className={`rounded-2xl border p-6 shadow-xl ${secondaryCard}`}>
             <div className="flex items-center justify-between border-b border-slate-500/20 pb-5">
               <div>
@@ -212,6 +214,7 @@ export default function Home() {
                   Welcome to Yankee AI
                 </h2>
               </div>
+
               <div className="rounded-xl bg-violet-500/15 p-3 text-2xl">
                 ✨
               </div>
@@ -247,6 +250,7 @@ export default function Home() {
                 <span className="text-2xl">📚</span>
                 <p className="mt-2 text-sm font-semibold">Study materials</p>
               </div>
+
               <div className={`rounded-xl border p-4 ${card}`}>
                 <span className="text-2xl">📈</span>
                 <p className="mt-2 text-sm font-semibold">Your progress</p>
@@ -262,9 +266,11 @@ export default function Home() {
           <p className="font-semibold uppercase tracking-widest text-violet-500">
             Everything you need
           </p>
+
           <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
             One platform. Better learning.
           </h2>
+
           <p className={`mx-auto mt-4 max-w-2xl ${muted}`}>
             Tools designed to make your learning journey more organized,
             effective, and enjoyable.
@@ -272,18 +278,21 @@ export default function Home() {
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => (
+          {features.map((feature, index) => (
             <div
-              key={feature.number}
+              key={feature.title}
               className={`rounded-2xl border p-6 transition hover:-translate-y-1 hover:border-violet-500/50 ${card}`}
             >
               <div className="text-3xl">{feature.icon}</div>
+
               <p className="mt-5 text-xs font-semibold tracking-widest text-violet-500">
-                {feature.number}
+                {String(index + 1).padStart(2, "0")}
               </p>
+
               <h3 className="mt-2 text-xl font-semibold">
                 {feature.title}
               </h3>
+
               <p className={`mt-3 leading-7 ${muted}`}>
                 {feature.description}
               </p>
@@ -292,7 +301,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it works */}
+      {/* How It Works */}
       <section
         id="how-it-works"
         className={`border-y py-20 ${
@@ -306,6 +315,7 @@ export default function Home() {
             <p className="font-semibold uppercase tracking-widest text-violet-500">
               Get started
             </p>
+
             <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
               Three steps to better learning
             </h2>
@@ -317,7 +327,11 @@ export default function Home() {
                 <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-600 text-xl font-bold text-white">
                   {step.number}
                 </div>
-                <h3 className="mt-5 text-xl font-semibold">{step.title}</h3>
+
+                <h3 className="mt-5 text-xl font-semibold">
+                  {step.title}
+                </h3>
+
                 <p className={`mt-3 leading-7 ${muted}`}>
                   {step.description}
                 </p>
@@ -332,9 +346,11 @@ export default function Home() {
         <p className="font-semibold uppercase tracking-widest text-violet-500">
           Our purpose
         </p>
+
         <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
           Learning should never stop.
         </h2>
+
         <p className={`mx-auto mt-6 max-w-3xl text-lg leading-8 ${muted}`}>
           Yankee AI is built around one idea: everyone should have access
           to tools that help them understand, explore, and grow. Whether
@@ -363,13 +379,13 @@ export default function Home() {
 
           <p className={`text-sm ${muted}`}>
             © {currentYear ?? "2026"} Yankee AI. Keep learning. Keep growing.
-            
           </p>
 
           <div className="flex gap-5 text-sm">
             <Link href="/login" className="hover:text-violet-500">
               Login
             </Link>
+
             <Link href="/signup" className="hover:text-violet-500">
               Sign up
             </Link>
