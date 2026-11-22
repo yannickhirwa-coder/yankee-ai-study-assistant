@@ -3,12 +3,28 @@ import { NextResponse } from "next/server";
 
 function cleanAIResponse(answer: string): string {
   return answer
-    // Remove complete internal thinking blocks.
+    // Remove internal thinking blocks.
     .replace(/<think\b[^>]*>[\s\S]*?<\/think>/gi, "")
-    // Remove an incomplete thinking block and everything after it.
     .replace(/<think\b[^>]*>[\s\S]*$/gi, "")
-    // Remove any remaining closing tags.
     .replace(/<\/think>/gi, "")
+
+    // Remove Markdown heading symbols.
+    .replace(/^#{1,6}\s+/gm, "")
+
+    // Remove bold and italic formatting.
+    .replace(/\*\*\*(.*?)\*\*\*/g, "$1")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/__(.*?)__/g, "$1")
+    .replace(/_(.*?)_/g, "$1")
+
+    // Clean Markdown bullets and code formatting.
+    .replace(/^\s*[-*+]\s+/gm, "• ")
+    .replace(/```[\w-]*\n?/g, "")
+    .replace(/`([^`]+)`/g, "$1")
+
+    // Remove excess blank lines.
+    .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
 
