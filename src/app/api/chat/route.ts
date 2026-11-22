@@ -1,4 +1,16 @@
+
 import { NextResponse } from "next/server";
+
+function cleanAIResponse(answer: string): string {
+  return answer
+    // Remove complete internal thinking blocks.
+    .replace(/<think\b[^>]*>[\s\S]*?<\/think>/gi, "")
+    // Remove an incomplete thinking block and everything after it.
+    .replace(/<think\b[^>]*>[\s\S]*$/gi, "")
+    // Remove any remaining closing tags.
+    .replace(/<\/think>/gi, "")
+    .trim();
+}
 
 export async function POST(request: Request) {
   try {
@@ -55,8 +67,20 @@ export async function POST(request: Request) {
       );
     }
 
+    const answer =
+      typeof data.answer === "string"
+        ? cleanAIResponse(data.answer)
+        : "";
+
+    if (!answer) {
+      return NextResponse.json(
+        { error: "The AI returned no user-facing answer. Please try again." },
+        { status: 502 }
+      );
+    }
+
     return NextResponse.json({
-      answer: data.answer,
+      answer,
       conversation_id: data.conversation_id,
       message_id: data.message_id,
     });
