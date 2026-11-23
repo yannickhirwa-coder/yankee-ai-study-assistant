@@ -37,15 +37,20 @@ export default function LoginPage() {
       router.refresh();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Unable to log in. Please try again."
+        err instanceof Error
+          ? err.message
+          : "Unable to log in. Please try again."
       );
     } finally {
       setLoading(false);
     }
   }
 
+  const inputClasses =
+    "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500";
+
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-5 py-12 text-white">
+    <main className="flex min-h-screen items-center justify-center bg-slate-100 px-5 py-12 text-slate-900 transition-colors dark:bg-slate-950 dark:text-white">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <Link href="/" className="text-3xl font-bold">
@@ -56,17 +61,17 @@ export default function LoginPage() {
             Welcome back
           </h1>
 
-          <p className="mt-3 text-slate-400">
+          <p className="mt-3 text-slate-600 dark:text-slate-400">
             Continue your learning journey with Yankee AI.
           </p>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-slate-900 p-8 shadow-xl">
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-xl transition-colors dark:border-white/10 dark:bg-slate-900">
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label
                 htmlFor="email"
-                className="mb-2 block text-sm font-medium text-slate-300"
+                className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 Email address
               </label>
@@ -79,7 +84,7 @@ export default function LoginPage() {
                 placeholder="you@example.com"
                 autoComplete="email"
                 required
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+                className={inputClasses}
               />
             </div>
 
@@ -87,14 +92,14 @@ export default function LoginPage() {
               <div className="mb-2 flex items-center justify-between">
                 <label
                   htmlFor="password"
-                  className="text-sm font-medium text-slate-300"
+                  className="text-sm font-medium text-slate-700 dark:text-slate-300"
                 >
                   Password
                 </label>
 
                 <Link
                   href="/forgot-password"
-                  className="text-sm font-medium text-violet-400 transition hover:text-violet-300"
+                  className="text-sm font-medium text-violet-600 transition hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
                 >
                   Forgot password?
                 </Link>
@@ -109,13 +114,13 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                   autoComplete="current-password"
                   required
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 pr-20 text-white outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+                  className={`${inputClasses} pr-20`}
                 />
 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400 hover:text-white"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-500 transition hover:text-violet-600 dark:text-slate-400 dark:hover:text-white"
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
@@ -125,7 +130,7 @@ export default function LoginPage() {
             {error && (
               <div
                 role="alert"
-                className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400"
+                className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400"
               >
                 {error}
               </div>
@@ -140,21 +145,24 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="my-6 border-t border-white/10" />
+          <div className="my-6 border-t border-slate-200 dark:border-white/10" />
 
-          <p className="text-center text-sm text-slate-400">
+          <p className="text-center text-sm text-slate-600 dark:text-slate-400">
             Don't have an account?{" "}
             <Link
               href="/signup"
-              className="font-semibold text-violet-400 hover:text-violet-300"
+              className="font-semibold text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
             >
               Create one
             </Link>
           </p>
         </div>
 
-        <p className="mt-8 text-center text-sm text-slate-500">
-          <Link href="/" className="transition hover:text-violet-400">
+        <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-500">
+          <Link
+            href="/"
+            className="transition hover:text-violet-600 dark:hover:text-violet-400"
+          >
             ← Back to home
           </Link>
         </p>
