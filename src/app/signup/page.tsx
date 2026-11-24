@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
@@ -9,35 +9,59 @@ export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [pendingEmail, setPendingEmail] = useState("");
 
-  async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
+  function getEmailRedirectUrl() {
+    return `${window.location.origin}/login`;
+  }
+
+  async function handleSignup(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     setLoading(true);
     setMessage("");
     setError("");
+    setPendingEmail("");
 
     try {
       const supabase = createClient();
 
+      const normalizedEmail = email.trim().toLowerCase();
+
       const { data, error } = await supabase.auth.signUp({
-        email: email.trim(),
+        email: normalizedEmail,
         password,
         options: {
-          data: { full_name: name.trim() },
-          emailRedirectTo: `${window.location.origin}/login`,
+          data: {
+            full_name: name.trim(),
+          },
+          emailRedirectTo: getEmailRedirectUrl(),
         },
       });
 
       if (error) throw error;
 
+      if (data.user?.identities?.length === 0) {
+        setError(
+          "An account may already exist with this email. Try signing in instead."
+        );
+        return;
+      }
+
       if (data.session) {
-        setMessage("Account created successfully! You can now log in.");
-      } else {
         setMessage(
-          "Registration successful! Please check your email to confirm your account."
+          "Your account has been created and you are signed in."
+        );
+      } else {
+        setPendingEmail(normalizedEmail);
+        setMessage(
+          "Your registration was received. Please check your inbox and spam folder for a verification email before signing in."
         );
       }
 
@@ -46,10 +70,46 @@ export default function SignupPage() {
       setPassword("");
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Registration failed."
+        err instanceof Error
+          ? err.message
+          : "Registration failed. Please try again."
       );
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleResendEmail() {
+    if (!pendingEmail) return;
+
+    setResending(true);
+    setMessage("");
+    setError("");
+
+    try {
+      const supabase = createClient();
+
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: pendingEmail,
+        options: {
+          emailRedirectTo: getEmailRedirectUrl(),
+        },
+      });
+
+      if (error) throw error;
+
+      setMessage(
+        "Your verification email request was submitted. Check your inbox and spam folder."
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to resend verification email."
+      );
+    } finally {
+      setResending(false);
     }
   }
 
@@ -59,6 +119,7 @@ export default function SignupPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-100 px-4 py-10 text-slate-900 transition-colors dark:bg-slate-950 dark:text-white">
       <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-xl transition-colors dark:border-slate-800 dark:bg-slate-900">
+
         <div className="mb-8 text-center">
           <Link href="/" className="text-3xl font-bold">
             Yankee<span className="text-violet-500">AI</span>
@@ -70,11 +131,9 @@ export default function SignupPage() {
         </div>
 
         <form onSubmit={handleSignup} className="space-y-5">
+
           <div>
-            <label
-              htmlFor="name"
-              className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
-            >
+            <label htmlFor="name" className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Full name
             </label>
 
@@ -90,10 +149,7 @@ export default function SignupPage() {
           </div>
 
           <div>
-            <label
-              htmlFor="email"
-              className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
-            >
+            <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Email address
             </label>
 
@@ -110,10 +166,7 @@ export default function SignupPage() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
-            >
+            <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Password
             </label>
 
@@ -148,13 +201,27 @@ export default function SignupPage() {
             </p>
           )}
 
+          {pendingEmail && (
+            <button
+              type="button"
+              onClick={handleResendEmail}
+              disabled={resending}
+              className="w-full rounded-xl border border-blue-300 p-3 font-semibold text-blue-600 transition hover:bg-blue-50 disabled:opacity-50 dark:border-blue-500/40 dark:text-blue-400 dark:hover:bg-blue-950/40"
+            >
+              {resending
+                ? "Sending..."
+                : "Resend verification email"}
+            </button>
+          )}
+
           <button
-            disabled={loading}
+            disabled={loading || resending}
             type="submit"
             className="w-full rounded-xl bg-blue-600 p-3.5 font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? "Creating account..." : "Create account"}
           </button>
+
         </form>
 
         <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
@@ -175,6 +242,7 @@ export default function SignupPage() {
             ← Back to home
           </Link>
         </p>
+
       </div>
     </main>
   );
