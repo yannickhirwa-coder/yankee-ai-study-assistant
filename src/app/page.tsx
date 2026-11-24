@@ -556,13 +556,21 @@ export default function Home() {
             © {currentYear ?? "2026"} Yankee AI. Keep learning. Keep growing.
           </p>
 
-          <div className="flex gap-5 text-sm">
+          <div className="flex flex-wrap gap-5 text-sm">
             <Link href="/login" className="hover:text-violet-500">
               Login
             </Link>
 
             <Link href="/signup" className="hover:text-violet-500">
               Sign up
+            </Link>
+
+            <Link href="/privacy" className="hover:text-violet-500">
+              Privacy Policy
+            </Link>
+
+            <Link href="/terms" className="hover:text-violet-500">
+              Terms of Service
             </Link>
           </div>
         </div>
